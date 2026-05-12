@@ -34,10 +34,21 @@ public class ReporteController {
     return ResponseEntity.ok(reporteService.buscarPorId(id));
   }
 
+  @GetMapping("/area/{area}")
+  public ResponseEntity<List<Reporte>> listarPorArea(@PathVariable String area) {
+    return ResponseEntity.ok(reporteService.listarPorArea(area));
+  }
+
   @PostMapping
   public ResponseEntity<Reporte> crear(@Valid @RequestBody Reporte reporte) {
     Reporte reporteCreado = reporteService.crear(reporte);
     return ResponseEntity.status(HttpStatus.CREATED).body(reporteCreado);
+  }
+
+  @PostMapping("/generar")
+  public ResponseEntity<Reporte> generar(@RequestBody Reporte reporte) {
+    Reporte reporteGenerado = reporteService.generarReporte(reporte);
+    return ResponseEntity.status(HttpStatus.CREATED).body(reporteGenerado);
   }
 
   @PutMapping("/{id}")
