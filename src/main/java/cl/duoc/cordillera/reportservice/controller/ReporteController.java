@@ -2,9 +2,13 @@ package cl.duoc.cordillera.reportservice.controller;
 
 import cl.duoc.cordillera.reportservice.model.Reporte;
 import cl.duoc.cordillera.reportservice.service.ReporteService;
+import cl.duoc.cordillera.reportservice.service.exportador.Exportador;
+import cl.duoc.cordillera.reportservice.service.exportador.ExportadorFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -23,20 +28,37 @@ import java.util.List;
 public class ReporteController {
 
   private final ReporteService reporteService;
+  private final ExportadorFactory exportadorFactory;
 
   @GetMapping
   public ResponseEntity<List<Reporte>> listarTodos() {
     return ResponseEntity.ok(reporteService.listarTodos());
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<Reporte> buscarPorId(@PathVariable Long id) {
-    return ResponseEntity.ok(reporteService.buscarPorId(id));
-  }
-
   @GetMapping("/area/{area}")
   public ResponseEntity<List<Reporte>> listarPorArea(@PathVariable String area) {
     return ResponseEntity.ok(reporteService.listarPorArea(area));
+  }
+
+  @GetMapping("/{id}/exportar")
+  public ResponseEntity<byte[]> exportar(
+      @PathVariable Long id,
+      @RequestParam(defaultValue = "pdf") String formato) {
+    Reporte reporte = reporteService.buscarPorId(id);
+    Exportador exportador = exportadorFactory.crearExportador(formato);
+
+    byte[] contenido = exportador.exportar(reporte);
+    String nombreArchivo = "reporte-" + id + "." + exportador.getExtension();
+
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType(exportador.getContentType()))
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+        .body(contenido);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<Reporte> buscarPorId(@PathVariable Long id) {
+    return ResponseEntity.ok(reporteService.buscarPorId(id));
   }
 
   @PostMapping
