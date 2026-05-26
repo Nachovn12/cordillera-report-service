@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ExportadoresTest {
 
   @Test
-  void pdfExportadorDebeGenerarContenidoPdfBasico() {
+  void pdfExportadorDebeGenerarReporteEjecutivo() {
     Reporte reporte = crearReporte();
     PdfExportador exportador = new PdfExportador();
 
@@ -20,9 +20,14 @@ class ExportadoresTest {
     String contenido = new String(resultado, StandardCharsets.US_ASCII);
 
     assertTrue(contenido.startsWith("%PDF-1.4"));
+    assertTrue(contenido.contains("CORDILLERA Platform"));
     assertTrue(contenido.contains("Reporte Ejecutivo Cordillera Platform"));
-    assertTrue(contenido.contains("Titulo: Reporte Ventas"));
-    assertTrue(contenido.contains("Area: Ventas"));
+    assertTrue(contenido.contains("Resumen ejecutivo"));
+    assertTrue(contenido.contains("KPI principal"));
+    assertTrue(contenido.contains("$150.000 CLP"));
+    assertTrue(contenido.contains("Detalle del reporte"));
+    assertTrue(contenido.contains("Observacion"));
+    assertTrue(contenido.contains("Cordillera Platform - Report Service - Documento generado automaticamente"));
     assertTrue(contenido.contains("xref"));
     assertTrue(contenido.contains("%%EOF"));
     assertEquals("application/pdf", exportador.getContentType());
@@ -40,7 +45,7 @@ class ExportadoresTest {
 
     String contenido = new String(exportador.exportar(reporte), StandardCharsets.US_ASCII);
 
-    assertTrue(contenido.contains("Titulo: Titulo \\(Especial\\) \\\\ N"));
+    assertTrue(contenido.contains("Titulo \\(Especial\\) \\\\ N"));
   }
 
   @Test
@@ -57,8 +62,8 @@ class ExportadoresTest {
 
     String contenido = new String(exportador.exportar(reporte), StandardCharsets.US_ASCII);
 
-    assertTrue(contenido.contains("Valor: 0"));
-    assertTrue(contenido.contains("Fecha Generacion: null"));
+    assertTrue(contenido.contains("$0 CLP"));
+    assertTrue(contenido.contains("Sin fecha"));
   }
 
   @Test
