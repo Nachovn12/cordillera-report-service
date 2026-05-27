@@ -4,8 +4,6 @@ import cl.duoc.cordillera.reportservice.dto.KpiResumenDto;
 import cl.duoc.cordillera.reportservice.model.Reporte;
 import cl.duoc.cordillera.reportservice.service.ReporteService;
 import cl.duoc.cordillera.reportservice.service.client.KpiClienteService;
-import cl.duoc.cordillera.reportservice.service.exportador.Exportador;
-import cl.duoc.cordillera.reportservice.service.exportador.ExportadorFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +28,6 @@ import java.util.List;
 public class ReporteController {
 
     private final ReporteService reporteService;
-    private final ExportadorFactory exportadorFactory;
     private final KpiClienteService kpiClienteService;
 
     @GetMapping
@@ -58,14 +55,24 @@ public class ReporteController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "pdf") String formato
     ) {
-        Reporte reporte = reporteService.buscarPorId(id);
-        Exportador exportador = exportadorFactory.crearExportador(formato);
+        byte[] contenido = reporteService.exportar(id, formato);
 
-        byte[] contenido = exportador.exportar(reporte);
-        String nombreArchivo = "reporte-" + id + "." + exportador.getExtension();
+        String extension = switch (formato.toLowerCase()) {
+            case "excel", "xls", "xlsx" -> "xls";
+            case "json" -> "json";
+            default -> "pdf";
+        };
+
+        String contentType = switch (formato.toLowerCase()) {
+            case "excel", "xls", "xlsx" -> "application/vnd.ms-excel";
+            case "json" -> "application/json";
+            default -> "application/pdf";
+        };
+
+        String nombreArchivo = "reporte-" + id + "." + extension;
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(exportador.getContentType()))
+                .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
                 .body(contenido);
     }

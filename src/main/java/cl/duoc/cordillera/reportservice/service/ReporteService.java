@@ -2,6 +2,8 @@ package cl.duoc.cordillera.reportservice.service;
 
 import cl.duoc.cordillera.reportservice.model.Reporte;
 import cl.duoc.cordillera.reportservice.repository.ReporteRepository;
+import cl.duoc.cordillera.reportservice.service.exportador.Exportador;
+import cl.duoc.cordillera.reportservice.service.exportador.ExportadorFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.List;
 public class ReporteService {
 
   private final ReporteRepository reporteRepository;
+  private final ExportadorFactory exportadorFactory;
 
   @Transactional(readOnly = true)
   public List<Reporte> listarTodos() {
@@ -76,6 +79,13 @@ public class ReporteService {
   public void eliminar(Long id) {
     Reporte existente = buscarPorId(id);
     reporteRepository.delete(existente);
+  }
+
+  @Transactional(readOnly = true)
+  public byte[] exportar(Long id, String formato) {
+    Reporte reporte = buscarPorId(id);
+    Exportador exportador = exportadorFactory.crearExportador(formato);
+    return exportador.exportar(reporte);
   }
 
   @Transactional(readOnly = true)

@@ -75,8 +75,8 @@ class ExportadoresTest {
 
     assertTrue(contenido.contains("ID;Titulo;Tipo;Area;Valor;Fecha Generacion"));
     assertTrue(contenido.contains("1;\"Reporte Ventas\";\"EJECUTIVO\";\"Ventas\";150000"));
-    assertEquals("text/csv; charset=UTF-8", exportador.getContentType());
-    assertEquals("csv", exportador.getExtension());
+    assertEquals("application/vnd.ms-excel", exportador.getContentType());
+    assertEquals("xls", exportador.getExtension());
   }
 
   @Test

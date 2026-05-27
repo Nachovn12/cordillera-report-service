@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import cl.duoc.cordillera.reportservice.service.exportador.Exportador;
+import cl.duoc.cordillera.reportservice.service.exportador.ExportadorFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,11 +25,14 @@ class ReporteServiceTest {
     @Mock
     private ReporteRepository reporteRepository;
 
+    @Mock
+    private ExportadorFactory exportadorFactory;
+
     private ReporteService reporteService;
 
     @BeforeEach
     void setUp() {
-        reporteService = new ReporteService(reporteRepository);
+        reporteService = new ReporteService(reporteRepository, exportadorFactory);
     }
 
     @Test
@@ -163,6 +168,21 @@ class ReporteServiceTest {
 
         assertEquals(1, resultado.size());
         verify(reporteRepository).findByArea("Ventas");
+    }
+
+    @Test
+    void exportarDebeUsarFactoryYRetornarBytes() {
+        Reporte reporte = crearReporte();
+        Exportador exportador = mock(Exportador.class);
+
+        when(reporteRepository.findById(1L)).thenReturn(Optional.of(reporte));
+        when(exportadorFactory.crearExportador("pdf")).thenReturn(exportador);
+        when(exportador.exportar(reporte)).thenReturn("bytes".getBytes());
+
+        byte[] resultado = reporteService.exportar(1L, "pdf");
+
+        assertArrayEquals("bytes".getBytes(), resultado);
+        verify(exportador).exportar(reporte);
     }
 
     private Reporte crearReporte() {

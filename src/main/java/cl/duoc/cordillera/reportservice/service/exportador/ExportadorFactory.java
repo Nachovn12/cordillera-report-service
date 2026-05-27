@@ -18,7 +18,7 @@ public class ExportadorFactory {
 
     return switch (formato.toLowerCase(Locale.ROOT)) {
       case "pdf" -> new PdfExportador();
-      case "excel", "xls" -> new ExcelExportador();
+      case "excel", "xls", "xlsx" -> new ExcelExportador();
       case "json" -> new JsonExportador();
       default -> throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST,

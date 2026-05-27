@@ -3,8 +3,7 @@ package cl.duoc.cordillera.reportservice.controller;
 import cl.duoc.cordillera.reportservice.model.Reporte;
 import cl.duoc.cordillera.reportservice.service.ReporteService;
 import cl.duoc.cordillera.reportservice.service.client.KpiClienteService;
-import cl.duoc.cordillera.reportservice.service.exportador.Exportador;
-import cl.duoc.cordillera.reportservice.service.exportador.ExportadorFactory;
+import cl.duoc.cordillera.reportservice.service.client.KpiClienteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ReporteControllerTest {
 
   private ReporteService reporteService;
-  private ExportadorFactory exportadorFactory;
   private KpiClienteService kpiClienteService;
   private MockMvc mockMvc;
   private ObjectMapper objectMapper;
@@ -32,12 +30,10 @@ class ReporteControllerTest {
   @BeforeEach
   void setUp() {
     reporteService = mock(ReporteService.class);
-    exportadorFactory = mock(ExportadorFactory.class);
     kpiClienteService = mock(KpiClienteService.class);
 
     ReporteController controller = new ReporteController(
         reporteService,
-        exportadorFactory,
         kpiClienteService);
 
     mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
@@ -136,14 +132,7 @@ class ReporteControllerTest {
 
   @Test
   void exportarDebeRetornarArchivo() throws Exception {
-    Reporte reporte = crearReporte();
-    Exportador exportador = mock(Exportador.class);
-
-    when(reporteService.buscarPorId(1L)).thenReturn(reporte);
-    when(exportadorFactory.crearExportador("pdf")).thenReturn(exportador);
-    when(exportador.exportar(reporte)).thenReturn("contenido-pdf".getBytes());
-    when(exportador.getExtension()).thenReturn("pdf");
-    when(exportador.getContentType()).thenReturn("application/pdf");
+    when(reporteService.exportar(1L, "pdf")).thenReturn("contenido-pdf".getBytes());
 
     mockMvc.perform(get("/api/reportes/1/exportar")
         .param("formato", "pdf"))
@@ -152,9 +141,7 @@ class ReporteControllerTest {
         .andExpect(content().contentType("application/pdf"))
         .andExpect(content().bytes("contenido-pdf".getBytes()));
 
-    verify(reporteService).buscarPorId(1L);
-    verify(exportadorFactory).crearExportador("pdf");
-    verify(exportador).exportar(reporte);
+    verify(reporteService).exportar(1L, "pdf");
   }
 
   @Test

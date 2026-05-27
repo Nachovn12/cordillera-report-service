@@ -25,12 +25,12 @@ public class ExcelExportador implements Exportador {
 
   @Override
   public String getContentType() {
-    return "text/csv; charset=UTF-8";
+    return "application/vnd.ms-excel";
   }
 
   @Override
   public String getExtension() {
-    return "csv";
+    return "xls";
   }
 
   private String valorCsv(String texto) {
