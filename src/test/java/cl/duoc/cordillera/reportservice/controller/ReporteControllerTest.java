@@ -3,7 +3,6 @@ package cl.duoc.cordillera.reportservice.controller;
 import cl.duoc.cordillera.reportservice.model.Reporte;
 import cl.duoc.cordillera.reportservice.service.ReporteService;
 import cl.duoc.cordillera.reportservice.service.client.KpiClienteService;
-import cl.duoc.cordillera.reportservice.service.client.KpiClienteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
