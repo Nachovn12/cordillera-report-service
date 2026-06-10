@@ -1,6 +1,7 @@
 package cl.duoc.cordillera.reportservice.controller;
 
 import cl.duoc.cordillera.reportservice.dto.KpiResumenDto;
+import cl.duoc.cordillera.reportservice.exception.GlobalExceptionHandler;
 import cl.duoc.cordillera.reportservice.model.Reporte;
 import cl.duoc.cordillera.reportservice.service.ReporteService;
 import cl.duoc.cordillera.reportservice.service.client.KpiClienteService;
@@ -48,7 +49,9 @@ class ReporteControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(reporteController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(reporteController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
     }
