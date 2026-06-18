@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -41,13 +42,24 @@ public class ReporteService {
     return reporteRepository.save(reporte);
   }
 
+  /**
+   * Genera un nuevo reporte ejecutivo validando que no exista ya un
+   * reporte para la misma combinacion area + tipo + anio + mes.
+   *
+   * Cambio 2 del profesor: "se generaba 2 veces el mismo reporte de los meses".
+   * Si ya existe el reporte, se devuelve el existente (idempotencia) en vez de
+   * crear un duplicado.
+   */
   public Reporte generarReporte(Reporte reporte) {
     validarDatosGeneracion(reporte);
 
     reporte.setId(null);
 
     if (!StringUtils.hasText(reporte.getTitulo())) {
-      reporte.setTitulo("Reporte ejecutivo de " + reporte.getArea());
+      reporte.setTitulo("Reporte ejecutivo de " + reporte.getArea()
+          + (reporte.getAnio() != null ? " " + reporte.getAnio()
+              + (reporte.getMes() != null ? "-" + String.format("%02d", reporte.getMes()) : "")
+              : ""));
     }
 
     if (!StringUtils.hasText(reporte.getTipo())) {
@@ -57,8 +69,39 @@ public class ReporteService {
     if (reporte.getFechaGeneracion() == null) {
       reporte.setFechaGeneracion(LocalDateTime.now());
     }
+    if (reporte.getAnio() == null && reporte.getFechaGeneracion() != null) {
+      reporte.setAnio(reporte.getFechaGeneracion().getYear());
+    }
+    if (reporte.getMes() == null && reporte.getFechaGeneracion() != null) {
+      reporte.setMes(reporte.getFechaGeneracion().getMonthValue());
+    }
 
-    return reporteRepository.save(reporte);
+    // Si ya existe un reporte para el mismo (area, tipo, anio, mes),
+    // se devuelve el existente. Cuando mes es null, se crea siempre.
+    if (reporte.getMes() != null) {
+      return reporteRepository
+          .findByAreaAndTipoAndAnioAndMes(
+              reporte.getArea(), reporte.getTipo(),
+              reporte.getAnio(), reporte.getMes())
+          .orElseGet(() -> guardarNuevo(reporte));
+    }
+
+    return guardarNuevo(reporte);
+  }
+
+  private Reporte guardarNuevo(Reporte reporte) {
+    try {
+      return reporteRepository.saveAndFlush(reporte);
+    } catch (DataIntegrityViolationException ex) {
+      // Respaldo contra el unique constraint a nivel BD.
+      return reporteRepository
+          .findByAreaAndTipoAndAnioAndMes(
+              reporte.getArea(), reporte.getTipo(),
+              reporte.getAnio(), reporte.getMes())
+          .orElseThrow(() -> new ResponseStatusException(
+              HttpStatus.CONFLICT,
+              "Ya existe un reporte para el mismo periodo y area"));
+    }
   }
 
   public Reporte actualizar(Long id, Reporte reporte) {

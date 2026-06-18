@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -19,7 +20,19 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reportes")
+@Table(
+    name = "reportes",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_reporte_periodo",
+            columnNames = {"area", "tipo", "anio", "mes"}
+        )
+    },
+    indexes = {
+        @jakarta.persistence.Index(name = "idx_reporte_anio", columnList = "anio"),
+        @jakarta.persistence.Index(name = "idx_reporte_area_anio", columnList = "area, anio")
+    }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -50,10 +63,22 @@ public class Reporte {
   @Column(nullable = false)
   private LocalDateTime fechaGeneracion;
 
+  @Column(name = "anio")
+  private Integer anio;
+
+  @Column(name = "mes")
+  private Integer mes;
+
   @PrePersist
   public void prePersist() {
     if (this.fechaGeneracion == null) {
       this.fechaGeneracion = LocalDateTime.now();
+    }
+    if (this.anio == null && this.fechaGeneracion != null) {
+      this.anio = this.fechaGeneracion.getYear();
+    }
+    if (this.mes == null && this.fechaGeneracion != null) {
+      this.mes = this.fechaGeneracion.getMonthValue();
     }
   }
 }

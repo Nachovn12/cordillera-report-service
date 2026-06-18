@@ -40,7 +40,9 @@ class ReporteModelTest {
         "EJECUTIVO",
         "Ventas",
         BigDecimal.valueOf(150000),
-        fecha);
+        fecha,
+        2026,
+        5);
 
     assertEquals(1L, reporte.getId());
     assertEquals("Reporte Ventas", reporte.getTitulo());

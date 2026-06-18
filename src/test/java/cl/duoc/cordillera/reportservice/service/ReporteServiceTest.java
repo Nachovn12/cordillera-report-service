@@ -113,8 +113,10 @@ class ReporteServiceTest {
         // Arrange
         Reporte r = new Reporte();
         r.setArea("Ventas");
+        r.setTipo("EJECUTIVO");
         r.setValor(BigDecimal.valueOf(150000));
-        when(reporteRepository.save(any(Reporte.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(reporteRepository.findByAreaAndTipoAndAnioAndMes(any(), any(), any(), any())).thenReturn(Optional.empty());
+        when(reporteRepository.saveAndFlush(any(Reporte.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // Act
         Reporte resultado = reporteService.generarReporte(r);
@@ -123,7 +125,7 @@ class ReporteServiceTest {
         assertEquals("Reporte ejecutivo de Ventas", resultado.getTitulo());
         assertEquals("EJECUTIVO", resultado.getTipo());
         assertNotNull(resultado.getFechaGeneracion());
-        verify(reporteRepository).save(r);
+        verify(reporteRepository).saveAndFlush(r);
     }
 
     @Test
@@ -134,7 +136,8 @@ class ReporteServiceTest {
         r.setValor(BigDecimal.valueOf(50000));
         r.setTitulo("Mi reporte personalizado");
         r.setTipo("OPERATIVO");
-        when(reporteRepository.save(any(Reporte.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(reporteRepository.findByAreaAndTipoAndAnioAndMes(any(), any(), any(), any())).thenReturn(Optional.empty());
+        when(reporteRepository.saveAndFlush(any(Reporte.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // Act
         Reporte resultado = reporteService.generarReporte(r);
@@ -197,12 +200,14 @@ class ReporteServiceTest {
         // Arrange — valor = 0 es válido (@PositiveOrZero)
         Reporte r = new Reporte();
         r.setArea("Logistica");
+        r.setTipo("EJECUTIVO");
         r.setValor(BigDecimal.ZERO);
-        when(reporteRepository.save(any(Reporte.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(reporteRepository.findByAreaAndTipoAndAnioAndMes(any(), any(), any(), any())).thenReturn(Optional.empty());
+        when(reporteRepository.saveAndFlush(any(Reporte.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // Act & Assert — no debe lanzar excepción
         assertDoesNotThrow(() -> reporteService.generarReporte(r));
-        verify(reporteRepository).save(r);
+        verify(reporteRepository).saveAndFlush(r);
     }
 
     // -------------------------------------------------------

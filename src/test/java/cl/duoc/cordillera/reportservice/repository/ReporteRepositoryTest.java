@@ -64,9 +64,9 @@ class ReporteRepositoryTest {
     @Test
     void findAll_debeRetornarTodosLosReportesGuardados() {
         // Arrange
-        reporteRepository.save(reporte("R-Ventas", "EJECUTIVO", "Ventas", BigDecimal.valueOf(100000)));
-        reporteRepository.save(reporte("R-Inventario", "OPERATIVO", "Inventario", BigDecimal.valueOf(200000)));
-        reporteRepository.save(reporte("R-Finanzas", "EJECUTIVO", "Finanzas", BigDecimal.valueOf(300000)));
+        reporteRepository.save(reporte("R-Ventas", "EJECUTIVO", "Ventas", BigDecimal.valueOf(100000), 2026, 1));
+        reporteRepository.save(reporte("R-Inventario", "OPERATIVO", "Inventario", BigDecimal.valueOf(200000), 2026, 2));
+        reporteRepository.save(reporte("R-Finanzas", "EJECUTIVO", "Finanzas", BigDecimal.valueOf(300000), 2026, 3));
 
         // Act
         List<Reporte> todos = reporteRepository.findAll();
@@ -93,8 +93,8 @@ class ReporteRepositoryTest {
     @Test
     void count_debeReflejarElNumeroRealDeReportesGuardados() {
         // Arrange
-        reporteRepository.save(reporte("R1", "EJECUTIVO", "Ventas", BigDecimal.valueOf(1000)));
-        reporteRepository.save(reporte("R2", "EJECUTIVO", "CRM", BigDecimal.valueOf(2000)));
+        reporteRepository.save(reporte("R1", "EJECUTIVO", "Ventas", BigDecimal.valueOf(1000), 2026, 1));
+        reporteRepository.save(reporte("R2", "EJECUTIVO", "CRM", BigDecimal.valueOf(2000), 2026, 1));
 
         // Act
         long total = reporteRepository.count();
@@ -110,9 +110,9 @@ class ReporteRepositoryTest {
     @Test
     void findByArea_debeRetornarSoloLosReportesDelAreaIndicada() {
         // Arrange
-        reporteRepository.save(reporte("Ventas Enero", "EJECUTIVO", "Ventas", BigDecimal.valueOf(100000)));
-        reporteRepository.save(reporte("Ventas Febrero", "EJECUTIVO", "Ventas", BigDecimal.valueOf(120000)));
-        reporteRepository.save(reporte("Stock Central", "OPERATIVO", "Inventario", BigDecimal.valueOf(80000)));
+        reporteRepository.save(reporte("Ventas Enero", "EJECUTIVO", "Ventas", BigDecimal.valueOf(100000), 2026, 1));
+        reporteRepository.save(reporte("Ventas Febrero", "EJECUTIVO", "Ventas", BigDecimal.valueOf(120000), 2026, 2));
+        reporteRepository.save(reporte("Stock Central", "OPERATIVO", "Inventario", BigDecimal.valueOf(80000), 2026, 6));
 
         // Act
         List<Reporte> resultado = reporteRepository.findByArea("Ventas");
@@ -174,12 +174,18 @@ class ReporteRepositoryTest {
     // -------------------------------------------------------
 
     private Reporte reporte(String titulo, String tipo, String area, BigDecimal valor) {
+        return reporte(titulo, tipo, area, valor, 2026, 6);
+    }
+
+    private Reporte reporte(String titulo, String tipo, String area, BigDecimal valor, int anio, int mes) {
         Reporte r = new Reporte();
         r.setTitulo(titulo);
         r.setTipo(tipo);
         r.setArea(area);
         r.setValor(valor);
-        r.setFechaGeneracion(LocalDateTime.now());
+        r.setAnio(anio);
+        r.setMes(mes);
+        r.setFechaGeneracion(LocalDateTime.of(anio, mes, 15, 10, 0));
         return r;
     }
 }
