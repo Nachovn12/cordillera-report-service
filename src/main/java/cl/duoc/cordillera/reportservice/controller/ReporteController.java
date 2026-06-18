@@ -244,8 +244,15 @@ public class ReporteController {
                 content = @Content(schema = @Schema(implementation = Reporte.class),
                     examples = @ExampleObject(name = "Nuevo reporte", value = EJEMPLO_REPORTE_REQUEST)))
             @Valid @RequestBody Reporte reporte) {
-        Reporte reporteCreado = reporteService.crear(reporte);
-        return ResponseEntity.status(HttpStatus.CREATED).body(reporteCreado);
+        // Fix EP3 (cambio 2 del profesor): delega en generarReporte() para que aplique
+        // la regla de unicidad (area, tipo, anio, mes). Asi se evita el caso reportado
+        // por el profesor: "se generaba 2 veces el mismo reporte de los meses".
+        Reporte reporteResultado = reporteService.generarReporte(reporte);
+        if (reporteResultado.getId() != null && !reporteResultado.getId().equals(reporte.getId())) {
+            // Se devuelve un reporte ya existente -> 200 OK
+            return ResponseEntity.ok(reporteResultado);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(reporteResultado);
     }
 
     @Operation(summary = "Generar reporte ejecutivo", description = "Genera un reporte completo a partir de los datos enviados. Puede incluir KPIs y datos de exportación.")

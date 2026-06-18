@@ -142,8 +142,10 @@ class ReporteControllerTest {
     @Test
     void crear_debeRetornarCreatedConElReporteGuardado() throws Exception {
         // Arrange
+        // EP3 fix: POST /api/reportes ahora delega en generarReporte() para aplicar
+        // la regla de unicidad. El test refleja el nuevo contrato del controller.
         Reporte r = reporte();
-        when(reporteService.crear(any(Reporte.class))).thenReturn(r);
+        when(reporteService.generarReporte(any(Reporte.class))).thenReturn(r);
 
         // Act & Assert
         mockMvc.perform(post("/api/reportes")
@@ -152,7 +154,7 @@ class ReporteControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1));
 
-        verify(reporteService).crear(any(Reporte.class));
+        verify(reporteService).generarReporte(any(Reporte.class));
     }
 
     // -------------------------------------------------------
