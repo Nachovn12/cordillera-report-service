@@ -218,7 +218,7 @@ Invoke-WebRequest -Uri "http://localhost:8085/api/reportes/1/exportar" -OutFile 
 
 ### Diagrama de clases
 
-![Diagrama de clases Report Service](../docs/diagramas/report-service-clases.png)
+![Diagrama de clases Report Service](../docs/diagramas/report-service-clases-ep3.png)
 
 ### Diagrama de casos de uso
 
