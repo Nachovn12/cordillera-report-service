@@ -221,12 +221,16 @@ class ReporteControllerTest {
     @Test
     void exportar_formatoPdf_debeRetornarArchivoPdf() throws Exception {
         // Arrange
+        Reporte reporteMock = new Reporte();
+        reporteMock.setTitulo("Test Report");
+        reporteMock.setFechaGeneracion(java.time.LocalDateTime.of(2024, 1, 1, 10, 0));
+        when(reporteService.buscarPorId(1L)).thenReturn(reporteMock);
         when(reporteService.exportar(1L, "pdf")).thenReturn("contenido-pdf".getBytes());
 
         // Act & Assert
         mockMvc.perform(get("/api/reportes/1/exportar").param("formato", "pdf"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"reporte-1.pdf\""))
+                .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("Cordillera_Reporte_Test_Report")))
                 .andExpect(content().contentType("application/pdf"));
 
         verify(reporteService).exportar(1L, "pdf");
@@ -235,12 +239,16 @@ class ReporteControllerTest {
     @Test
     void exportar_formatoExcel_debeRetornarArchivoXls() throws Exception {
         // Arrange
+        Reporte reporteMock = new Reporte();
+        reporteMock.setTitulo("Test Report");
+        reporteMock.setFechaGeneracion(java.time.LocalDateTime.of(2024, 1, 1, 10, 0));
+        when(reporteService.buscarPorId(1L)).thenReturn(reporteMock);
         when(reporteService.exportar(1L, "excel")).thenReturn("contenido-excel".getBytes());
 
         // Act & Assert
         mockMvc.perform(get("/api/reportes/1/exportar").param("formato", "excel"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"reporte-1.xls\""))
+                .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("Cordillera_Reporte_Test_Report")))
                 .andExpect(content().contentType("application/vnd.ms-excel"));
 
         verify(reporteService).exportar(1L, "excel");
@@ -249,12 +257,16 @@ class ReporteControllerTest {
     @Test
     void exportar_formatoJson_debeRetornarArchivoJson() throws Exception {
         // Arrange
+        Reporte reporteMock = new Reporte();
+        reporteMock.setTitulo("Test Report");
+        reporteMock.setFechaGeneracion(java.time.LocalDateTime.of(2024, 1, 1, 10, 0));
+        when(reporteService.buscarPorId(1L)).thenReturn(reporteMock);
         when(reporteService.exportar(1L, "json")).thenReturn("{\"id\":1}".getBytes());
 
         // Act & Assert
         mockMvc.perform(get("/api/reportes/1/exportar").param("formato", "json"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"reporte-1.json\""))
+                .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("Cordillera_Reporte_Test_Report")))
                 .andExpect(content().contentType("application/json"));
 
         verify(reporteService).exportar(1L, "json");
@@ -263,11 +275,16 @@ class ReporteControllerTest {
     @Test
     void exportar_formatoPorDefecto_esPdf() throws Exception {
         // Arrange — sin parámetro "formato", debe usar "pdf" por defecto
+        Reporte reporteMock = new Reporte();
+        reporteMock.setTitulo("Test Report");
+        reporteMock.setFechaGeneracion(java.time.LocalDateTime.of(2024, 1, 1, 10, 0));
+        when(reporteService.buscarPorId(1L)).thenReturn(reporteMock);
         when(reporteService.exportar(1L, "pdf")).thenReturn("pdf".getBytes());
 
         // Act & Assert
         mockMvc.perform(get("/api/reportes/1/exportar"))
                 .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("Cordillera_Reporte_Test_Report")))
                 .andExpect(content().contentType("application/pdf"));
 
         verify(reporteService).exportar(1L, "pdf");
