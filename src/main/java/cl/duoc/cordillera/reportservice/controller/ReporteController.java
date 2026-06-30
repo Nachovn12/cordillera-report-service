@@ -189,6 +189,7 @@ public class ReporteController {
             @Parameter(description = "Formato: pdf (default), excel, json", example = "pdf")
             @RequestParam(defaultValue = "pdf") String formato) {
         byte[] contenido = reporteService.exportar(id, formato);
+        Reporte reporte = reporteService.buscarPorId(id);
 
         String extension = switch (formato.toLowerCase()) {
             case "excel", "xls", "xlsx" -> "xls";
@@ -202,7 +203,16 @@ public class ReporteController {
             default -> "application/pdf";
         };
 
-        String nombreArchivo = "reporte-" + id + "." + extension;
+        String tituloLimpio = reporte.getTitulo().replaceAll("[^a-zA-Z0-9]+", "_");
+        if (tituloLimpio.length() > 30) {
+            tituloLimpio = tituloLimpio.substring(0, 30);
+        }
+        if (tituloLimpio.endsWith("_")) {
+            tituloLimpio = tituloLimpio.substring(0, tituloLimpio.length() - 1);
+        }
+        
+        String fecha = reporte.getFechaGeneracion().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+        String nombreArchivo = "Cordillera_Reporte_" + tituloLimpio + "_" + fecha + "." + extension;
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
