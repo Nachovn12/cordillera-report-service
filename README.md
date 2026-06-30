@@ -218,11 +218,11 @@ Invoke-WebRequest -Uri "http://localhost:8085/api/reportes/1/exportar" -OutFile 
 
 ### Diagrama de clases
 
-![Diagrama de clases Report Service](../docs/diagramas/report-service-clases-ep3.png)
+![Diagrama de clases Report Service](https://raw.githubusercontent.com/Nachovn12/cordillera-platform-ep3/main/docs/diagramas/report-service-clases-ep3.png)
 
 ### Diagrama de casos de uso
 
-![Diagrama de casos de uso Report Service](../docs/diagramas/report-service-casos-uso.png)
+![Diagrama de casos de uso Report Service](https://raw.githubusercontent.com/Nachovn12/cordillera-platform-ep3/main/docs/diagramas/report-service-casos-uso.png)
 
 ## 19. Historias de usuario y subtareas asociadas
 
