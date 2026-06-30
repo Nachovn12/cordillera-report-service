@@ -15,7 +15,7 @@ import java.util.Locale;
 
 public class PdfExportador implements Exportador {
 
-  private static final DateTimeFormatter FECHA_FORMATO = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+  private static final DateTimeFormatter FECHA_FORMATO = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm a", new Locale("es", "CL"));
   private static final DecimalFormat MONTO_FORMATO = crearFormatoMonto();
 
   @Override
