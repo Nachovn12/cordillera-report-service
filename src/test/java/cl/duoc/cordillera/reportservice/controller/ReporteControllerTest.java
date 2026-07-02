@@ -57,7 +57,7 @@ class ReporteControllerTest {
     }
 
     // -------------------------------------------------------
-    // GET /api/reportes
+    // GET /api/v1/reportes
     // -------------------------------------------------------
 
     @Test
@@ -66,7 +66,7 @@ class ReporteControllerTest {
         when(reporteService.listarTodos()).thenReturn(List.of(reporte()));
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes"))
+        mockMvc.perform(get("/api/v1/reportes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].titulo").value("Reporte Ventas"));
@@ -80,7 +80,7 @@ class ReporteControllerTest {
         when(reporteService.listarTodos()).thenReturn(Collections.emptyList());
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes"))
+        mockMvc.perform(get("/api/v1/reportes"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
 
@@ -88,7 +88,7 @@ class ReporteControllerTest {
     }
 
     // -------------------------------------------------------
-    // GET /api/reportes/area/{area}
+    // GET /api/v1/reportes/area/{area}
     // -------------------------------------------------------
 
     @Test
@@ -97,7 +97,7 @@ class ReporteControllerTest {
         when(reporteService.listarPorArea("Ventas")).thenReturn(List.of(reporte()));
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/area/Ventas"))
+        mockMvc.perform(get("/api/v1/reportes/area/Ventas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].area").value("Ventas"));
 
@@ -105,7 +105,7 @@ class ReporteControllerTest {
     }
 
     // -------------------------------------------------------
-    // GET /api/reportes/{id}
+    // GET /api/v1/reportes/{id}
     // -------------------------------------------------------
 
     @Test
@@ -114,7 +114,7 @@ class ReporteControllerTest {
         when(reporteService.buscarPorId(1L)).thenReturn(reporte());
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/1"))
+        mockMvc.perform(get("/api/v1/reportes/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.titulo").value("Reporte Ventas"));
@@ -129,26 +129,26 @@ class ReporteControllerTest {
                 .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Reporte no encontrado con id: 99"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/99"))
+        mockMvc.perform(get("/api/v1/reportes/99"))
                 .andExpect(status().isNotFound());
 
         verify(reporteService).buscarPorId(99L);
     }
 
     // -------------------------------------------------------
-    // POST /api/reportes
+    // POST /api/v1/reportes
     // -------------------------------------------------------
 
     @Test
     void crear_debeRetornarCreatedConElReporteGuardado() throws Exception {
         // Arrange
-        // EP3 fix: POST /api/reportes ahora delega en generarReporte() para aplicar
+        // EP3 fix: POST /api/v1/reportes ahora delega en generarReporte() para aplicar
         // la regla de unicidad. El test refleja el nuevo contrato del controller.
         Reporte r = reporte();
         when(reporteService.generarReporte(any(Reporte.class))).thenReturn(r);
 
         // Act & Assert
-        mockMvc.perform(post("/api/reportes")
+        mockMvc.perform(post("/api/v1/reportes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(r)))
                 .andExpect(status().isCreated())
@@ -158,7 +158,7 @@ class ReporteControllerTest {
     }
 
     // -------------------------------------------------------
-    // POST /api/reportes/generar
+    // POST /api/v1/reportes/generar
     // -------------------------------------------------------
 
     @Test
@@ -168,7 +168,7 @@ class ReporteControllerTest {
         when(reporteService.generarReporte(any(Reporte.class))).thenReturn(r);
 
         // Act & Assert
-        mockMvc.perform(post("/api/reportes/generar")
+        mockMvc.perform(post("/api/v1/reportes/generar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(r)))
                 .andExpect(status().isCreated())
@@ -178,7 +178,7 @@ class ReporteControllerTest {
     }
 
     // -------------------------------------------------------
-    // PUT /api/reportes/{id}
+    // PUT /api/v1/reportes/{id}
     // -------------------------------------------------------
 
     @Test
@@ -189,7 +189,7 @@ class ReporteControllerTest {
         when(reporteService.actualizar(eq(1L), any(Reporte.class))).thenReturn(r);
 
         // Act & Assert
-        mockMvc.perform(put("/api/reportes/1")
+        mockMvc.perform(put("/api/v1/reportes/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(r)))
                 .andExpect(status().isOk())
@@ -199,7 +199,7 @@ class ReporteControllerTest {
     }
 
     // -------------------------------------------------------
-    // DELETE /api/reportes/{id}
+    // DELETE /api/v1/reportes/{id}
     // -------------------------------------------------------
 
     @Test
@@ -208,14 +208,14 @@ class ReporteControllerTest {
         doNothing().when(reporteService).eliminar(1L);
 
         // Act & Assert
-        mockMvc.perform(delete("/api/reportes/1"))
+        mockMvc.perform(delete("/api/v1/reportes/1"))
                 .andExpect(status().isNoContent());
 
         verify(reporteService).eliminar(1L);
     }
 
     // -------------------------------------------------------
-    // GET /api/reportes/{id}/exportar — PDF, Excel, JSON
+    // GET /api/v1/reportes/{id}/exportar — PDF, Excel, JSON
     // -------------------------------------------------------
 
     @Test
@@ -228,7 +228,7 @@ class ReporteControllerTest {
         when(reporteService.exportar(1L, "pdf")).thenReturn("contenido-pdf".getBytes());
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/1/exportar").param("formato", "pdf"))
+        mockMvc.perform(get("/api/v1/reportes/1/exportar").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("Cordillera_Reporte_Test_Report")))
                 .andExpect(content().contentType("application/pdf"));
@@ -246,7 +246,7 @@ class ReporteControllerTest {
         when(reporteService.exportar(1L, "excel")).thenReturn("contenido-excel".getBytes());
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/1/exportar").param("formato", "excel"))
+        mockMvc.perform(get("/api/v1/reportes/1/exportar").param("formato", "excel"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("Cordillera_Reporte_Test_Report")))
                 .andExpect(content().contentType("application/vnd.ms-excel"));
@@ -264,7 +264,7 @@ class ReporteControllerTest {
         when(reporteService.exportar(1L, "json")).thenReturn("{\"id\":1}".getBytes());
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/1/exportar").param("formato", "json"))
+        mockMvc.perform(get("/api/v1/reportes/1/exportar").param("formato", "json"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("Cordillera_Reporte_Test_Report")))
                 .andExpect(content().contentType("application/json"));
@@ -282,7 +282,7 @@ class ReporteControllerTest {
         when(reporteService.exportar(1L, "pdf")).thenReturn("pdf".getBytes());
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/1/exportar"))
+        mockMvc.perform(get("/api/v1/reportes/1/exportar"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString("Cordillera_Reporte_Test_Report")))
                 .andExpect(content().contentType("application/pdf"));
@@ -291,7 +291,7 @@ class ReporteControllerTest {
     }
 
     // -------------------------------------------------------
-    // GET /api/reportes/kpis
+    // GET /api/v1/reportes/kpis
     // -------------------------------------------------------
 
     @Test
@@ -303,7 +303,7 @@ class ReporteControllerTest {
         when(kpiClienteService.obtenerKpis()).thenReturn(List.of(kpi));
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/kpis"))
+        mockMvc.perform(get("/api/v1/reportes/kpis"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nombre").value("Ventas Totales"));
 
@@ -316,7 +316,7 @@ class ReporteControllerTest {
         when(kpiClienteService.obtenerKpis()).thenReturn(Collections.emptyList());
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/kpis"))
+        mockMvc.perform(get("/api/v1/reportes/kpis"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
 
@@ -329,7 +329,7 @@ class ReporteControllerTest {
         when(kpiClienteService.obtenerKpisPorCategoria("ventas")).thenReturn(Collections.emptyList());
 
         // Act & Assert
-        mockMvc.perform(get("/api/reportes/kpis/categoria/ventas"))
+        mockMvc.perform(get("/api/v1/reportes/kpis/categoria/ventas"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
 

@@ -114,16 +114,16 @@ fechaGeneracion
 
 | Método | Endpoint                                   | Descripción                      |
 | ------ | ------------------------------------------ | -------------------------------- |
-| GET    | `/api/reportes`                            | Lista todos los reportes.        |
-| POST   | `/api/reportes`                            | Crea un nuevo reporte.           |
-| GET    | `/api/reportes/{id}`                       | Consulta un reporte por ID.      |
-| PUT    | `/api/reportes/{id}`                       | Actualiza un reporte.            |
-| DELETE | `/api/reportes/{id}`                       | Elimina un reporte.              |
-| GET    | `/api/reportes/area/{area}`                | Filtra reportes por área.        |
-| POST   | `/api/reportes/generar`                    | Genera un reporte ejecutivo.     |
-| GET    | `/api/reportes/{id}/exportar`              | Exporta un reporte.              |
-| GET    | `/api/reportes/kpis`                       | Consulta KPIs desde KPI Service. |
-| GET    | `/api/reportes/kpis/categoria/{categoria}` | Consulta KPIs por categoría.     |
+| GET    | `/api/v1/reportes`                            | Lista todos los reportes.        |
+| POST   | `/api/v1/reportes`                            | Crea un nuevo reporte.           |
+| GET    | `/api/v1/reportes/{id}`                       | Consulta un reporte por ID.      |
+| PUT    | `/api/v1/reportes/{id}`                       | Actualiza un reporte.            |
+| DELETE | `/api/v1/reportes/{id}`                       | Elimina un reporte.              |
+| GET    | `/api/v1/reportes/area/{area}`                | Filtra reportes por área.        |
+| POST   | `/api/v1/reportes/generar`                    | Genera un reporte ejecutivo.     |
+| GET    | `/api/v1/reportes/{id}/exportar`              | Exporta un reporte.              |
+| GET    | `/api/v1/reportes/kpis`                       | Consulta KPIs desde KPI Service. |
+| GET    | `/api/v1/reportes/kpis/categoria/{categoria}` | Consulta KPIs por categoría.     |
 
 ## 11. Exportación de reportes
 
@@ -208,10 +208,10 @@ Branch Coverage: 76%
 ## 17. Pruebas manuales
 
 ```powershell
-Invoke-RestMethod -Uri "http://localhost:8085/api/reportes" -Method Get
-Invoke-RestMethod -Uri "http://localhost:8085/api/reportes/area/Gerencia" -Method Get
-Invoke-RestMethod -Uri "http://localhost:8085/api/reportes/kpis" -Method Get
-Invoke-WebRequest -Uri "http://localhost:8085/api/reportes/1/exportar" -OutFile "reporte-1.pdf"
+Invoke-RestMethod -Uri "http://localhost:8085/api/v1/reportes" -Method Get
+Invoke-RestMethod -Uri "http://localhost:8085/api/v1/reportes/area/Gerencia" -Method Get
+Invoke-RestMethod -Uri "http://localhost:8085/api/v1/reportes/kpis" -Method Get
+Invoke-WebRequest -Uri "http://localhost:8085/api/v1/reportes/1/exportar" -OutFile "reporte-1.pdf"
 ```
 
 ## 18. Diagramas
@@ -251,7 +251,7 @@ Criterios de aceptación relacionados:
 - Existe entidad `Reporte` con campos `id`, `titulo`, `tipo`, `area`, `valor` y `fechaGeneracion`.
 - Existe `ReporteRepository` extendiendo `JpaRepository`.
 - Existe `ReporteService` con lógica CRUD.
-- Existe `ReporteController` exponiendo endpoints `/api/reportes`.
+- Existe `ReporteController` exponiendo endpoints `/api/v1/reportes`.
 - Funcionan operaciones `GET`, `POST`, `PUT` y `DELETE`.
 - El servicio corre en puerto `8085` y persiste en `report_db`.
 
@@ -303,8 +303,8 @@ Estas historias y subtareas permiten vincular la implementación técnica de Rep
 ## 20. Evidencias relacionadas
 
 - Servicio operativo en `http://localhost:8085`.
-- Endpoint `/api/reportes` validado directamente.
-- Reportes consumidos desde BFF Gateway mediante `/api/reportes`.
+- Endpoint `/api/v1/reportes` validado directamente.
+- Reportes consumidos desde BFF Gateway mediante `/api/v1/reportes`.
 - Reporte `Reporte Ejecutivo Mayo 2026` visible en frontend.
-- Exportación PDF funcionando mediante `/api/reportes/{id}/exportar`.
+- Exportación PDF funcionando mediante `/api/v1/reportes/{id}/exportar`.
 - Pruebas unitarias y cobertura JaCoCo sobre el mínimo requerido.

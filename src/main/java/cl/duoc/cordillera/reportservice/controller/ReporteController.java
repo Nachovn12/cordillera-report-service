@@ -25,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reportes")
+@RequestMapping("/api/v1/reportes")
 public class ReporteController implements ReporteApi {
 
     private final ReporteService reporteService;

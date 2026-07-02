@@ -23,7 +23,7 @@ public class KpiClienteService {
     @CircuitBreaker(name = "kpiService", fallbackMethod = "fallbackObtenerKpis")
     public List<KpiResumenDto> obtenerKpis() {
         KpiResumenDto[] respuesta = restTemplate.getForObject(
-                kpiServiceUrl + "/api/kpis",
+                kpiServiceUrl + "/api/v1/kpis",
                 KpiResumenDto[].class
         );
 
@@ -37,7 +37,7 @@ public class KpiClienteService {
     @CircuitBreaker(name = "kpiService", fallbackMethod = "fallbackObtenerKpisPorCategoria")
     public List<KpiResumenDto> obtenerKpisPorCategoria(String categoria) {
         KpiResumenDto[] respuesta = restTemplate.getForObject(
-                kpiServiceUrl + "/api/kpis/categoria/{categoria}",
+                kpiServiceUrl + "/api/v1/kpis/categoria/{categoria}",
                 KpiResumenDto[].class,
                 categoria
         );
